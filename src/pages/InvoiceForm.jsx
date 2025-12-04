@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
 
-export default function InvoiceForm({ invoices, setInvoices }) {
+export default function InvoiceForm({ invoices=[], setInvoices ,customers=[], setCustomers}) {
   const [items, setItems] = useState([{ name: "", qty: 1, price: 0 }]);
   const [customer, setCustomer] = useState("");
   const [contact, setContact] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [saving, setSaving] = useState(false);
 
   const printRef = useRef();
 
@@ -20,27 +21,67 @@ export default function InvoiceForm({ invoices, setInvoices }) {
   const total = subtotal + gst - Number(discount);
 
   // 💾 Save invoice
-  const saveInvoice = () => {
-    if (!customer.trim() || !contact.trim()) {
-      alert("Please enter customer name and contact number!");
+  const saveInvoice = async () => {
+  if (!customer.trim() || !contact.trim()) {
+    alert("Please enter customer name and contact number!");
+    return;
+  }
+
+  if (items.every(item => !item.name.trim())) {
+    alert("Please add at least one item!");
+    return;
+  }
+
+  try {
+    setSaving(true);
+
+    // Construct payload matching your backend serializer
+    const payload = {
+      customer_name: customer,
+      phone: contact,
+      items: items.map(item => ({
+        name: item.name,
+        qty: item.qty,
+        price: item.price,
+      })),
+      subtotal: subtotal.toFixed(2),    // 👈 string
+      gst: gst.toFixed(2),              // 👈 string - fixes decimal issue
+      discount: Number(discount).toFixed(2),  // 👈 string
+      total: total.toFixed(2), 
+    };
+
+    const res = await fetch("http://localhost:8000/api/invoicesnew/", {
+      method: "POST",
+      credentials: "include",  // send session cookie
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Invoice save failed:", res.status, errorText);
+      alert(`Failed to save invoice: ${res.status}`);
       return;
     }
 
-    const invoice = {
-      id: invoices.length + 1,
-      customer,
-      contact,
-      items,
-      subtotal,
-      gst,
-      discount,
-      total,
-      date: new Date().toLocaleDateString(),
-    };
+    const newInvoice = await res.json();
+    setInvoices([...invoices, newInvoice]);
+    alert("Invoice & Customer Saved Successfully!");
 
-    setInvoices([...invoices, invoice]);
-    alert("Invoice Saved Successfully!");
-  };
+    // Reset form fields
+    setCustomer("");
+    setContact("");
+    setDiscount(0);
+    setItems([{ name: "", qty: 1, price: 0 }]);
+
+  } catch (err) {
+    console.error("Network error:", err);
+    alert("Network error. Try again.");
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   // 🖨️ Print invoice safely (no reload)
   const printInvoice = () => {
@@ -121,7 +162,7 @@ export default function InvoiceForm({ invoices, setInvoices }) {
         </tbody>
       </table>
 
-      <button onClick={addItem}>+ Add Item</button>
+      <button onClick={addItem} disabled={saving}>{saving?"saving":"+ Add Item"} </button>
 
       {/* Totals */}
       <div className="totals">

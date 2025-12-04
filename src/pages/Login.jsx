@@ -1,71 +1,93 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";  // Add this import
 
-export default function Login({ setAuth }) {
-  const [isSignup, setIsSignup] = useState(false);
+export default function Login({ onLoginSuccess }) {  // ← CHANGED: onLoginSuccess
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();  // For auto-redirect
 
-  const handleSignup = () => {
-    if (!user || !pass) return alert("Enter username and password!");
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const existing = users.find((u) => u.user === user);
-    if (existing) return alert("User already exists!");
-    users.push({ user, pass });
-    localStorage.setItem("users", JSON.stringify(users));
-    alert("User registered successfully!");
-    setIsSignup(false);
-  };
+  const handleLogin = async () => {
+    if (!user || !pass) {
+      alert("Please enter username and password!");
+      return;
+    }
 
-  const handleLogin = () => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const found = users.find((u) => u.user === user && u.pass === pass);
-    if (found) {
-      setAuth(true);
-    } else {
-      alert("Invalid username or password");
+    setLoading(true);
+    try {
+      console.log("Attempting login with:", { username: user });
+      
+      const res = await fetch("http://localhost:8000/api/login/", {  // Session endpoint
+        method: "POST",
+        credentials: 'include',  // Session cookie!
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass }),
+      });
+
+      const data = await res.json();
+      console.log("Login response:", data);
+
+      if (res.ok) {
+        onLoginSuccess(data.is_admin || false);  // ← Notify App.js
+        alert("Login successful!");
+        navigate("/dashboard");  // Auto-redirect
+      } else {
+        alert(data.error || data.detail || "Invalid username or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Network error - Check if backend server is running on port 8000");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>{isSignup ? "BillStack" : "BillStack"}</h2>
+    <div className="login-container" style={{ 
+      maxWidth: '400px', 
+      margin: '100px auto', 
+      padding: '2rem', 
+      border: '1px solid #ddd',
+      borderRadius: '8px'
+    }}>
+      <h2>BillStack Login</h2>
+      
+      <div style={{ marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+          style={{ width: '100%', padding: '0.75rem', marginBottom: '0.5rem' }}
+          disabled={loading}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
+          style={{ width: '100%', padding: '0.75rem' }}
+          disabled={loading}
+        />
+      </div>
 
-      <input
-        type="text"
-        placeholder="Username"
-        value={user}
-        onChange={(e) => setUser(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={pass}
-        onChange={(e) => setPass(e.target.value)}
-      />
+      <button 
+        onClick={handleLogin}
+        disabled={loading || !user || !pass}
+        style={{
+          width: '100%',
+          padding: '0.75rem',
+          background: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
-      {isSignup ? (
-        <button onClick={handleSignup}>Sign Up</button>
-      ) : (
-        <button onClick={handleLogin}>Login</button>
-      )}
-
-      <p style={{ marginTop: "10px" }}>
-        {isSignup ? (
-          <>
-            Already have an account?{" "}
-            <span className="link" onClick={() => setIsSignup(false)}>
-              Login
-            </span>
-          </>
-        ) : (
-          <>
-            Don’t have an account?{" "}
-            <span className="link" onClick={() => setIsSignup(true)}>
-              Sign Up
-            </span>
-          </>
-        )}
-      </p>
+      {loading && <p style={{ textAlign: 'center', color: '#666' }}>Connecting to server...</p>}
     </div>
   );
 }

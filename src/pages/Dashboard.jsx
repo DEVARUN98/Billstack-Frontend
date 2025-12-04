@@ -1,11 +1,16 @@
 import React from "react";
 
 export default function Dashboard({ invoices, customers, products }) {
+  if (!invoices || !customers || !products) {
+    return <div>Loading...</div>;
+  }
   const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
 
   return (
     <div className="dashboard">
-      {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",totalSales, customers, products)}
+      {/* {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",invoices)} */}
+      {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",totalSales, customers, products,invoices)}
+      {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",customers.length, products.length)}
       <h2>Dashboard Overview</h2>
       <div className="stats">
         <div className="stat-card">

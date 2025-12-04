@@ -1,33 +1,55 @@
 import React, { useState } from "react";
 
-export default function Products({ products, setProducts }) {
+export default function Products({ products = [], setProducts }) {
   const [prod, setProd] = useState({ name: "", price: "", qty: "" });
 
-  // 🔹 Add new product
-  const addProduct = () => {
+  const addProduct = async () => {
     if (!prod.name.trim() || !prod.price || !prod.qty) {
       alert("Please fill all product details!");
       return;
     }
 
-    // Check for duplicates (same name)
+    // Safe duplicate check
     const exists = products.some(
-      (p) => p.name.toLowerCase() === prod.name.toLowerCase()
+      (p) => p.product_name?.toLowerCase() === prod.name.toLowerCase()
     );
     if (exists) {
       alert("Product already exists!");
       return;
     }
 
-    setProducts([...products, prod]);
-    setProd({ name: "", price: "", qty: "" });
+    try {
+      const res = await fetch("http://localhost:8000/api/products/", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_name: prod.name,
+          price: Number(prod.price),
+          product_quantity: Number(prod.qty),
+        }),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Save failed:", res.status, errorText);
+        alert(`Error: ${res.status}`);
+        return;
+      }
+
+      const newProduct = await res.json();
+      setProducts([...products, newProduct]);
+      setProd({ name: "", price: "", qty: "" }); // reset form
+    } catch (err) {
+      console.error(err);
+      alert("Network error");
+    }
   };
 
   return (
     <div className="page">
       <h2>Products / Services</h2>
 
-      {/* Product Input Section */}
       <div className="form-row">
         <input
           type="text"
@@ -47,10 +69,9 @@ export default function Products({ products, setProducts }) {
           value={prod.qty}
           onChange={(e) => setProd({ ...prod, qty: e.target.value })}
         />
-        <button onClick={addProduct}>Add</button>
+        <button onClick={addProduct}>Add Product</button>
       </div>
 
-      {/* Product Table */}
       <table>
         <thead>
           <tr>
@@ -61,11 +82,12 @@ export default function Products({ products, setProducts }) {
         </thead>
         <tbody>
           {products.length > 0 ? (
-            products.map((p, i) => (
-              <tr key={i}>
-                <td>{p.name}</td>
+            console.log("products", products),
+            products.map((p) => (
+              <tr key={p.id || p.product_name}>
+                <td>{p.product_name}</td>
                 <td>₹ {p.price}</td>
-                <td>{p.qty}</td>
+                <td>{p.product_quantity}</td>
               </tr>
             ))
           ) : (
