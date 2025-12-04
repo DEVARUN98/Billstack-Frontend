@@ -58,7 +58,6 @@ export default function Customers({ isAdmin }) {
       });
 
       if (res.ok) {
-        const result = await res.json();
         // Refresh customers list after add
         const refreshRes = await fetch("http://localhost:8000/api/invoicesnew/customers/", {
           credentials: "include",
