@@ -7,7 +7,7 @@ const InventoryList = ({ token }) => {
   const [error, setError] = useState(null);
 
   const fetchInventory = () => {
-    fetch('http://localhost:8000/api/inventory/', {
+    fetch('https://billstack-backend-eb1d.onrender.com/api/inventory/', {
       headers: {
         'Authorization': `Token ${token}`,
       },
@@ -32,7 +32,7 @@ const InventoryList = ({ token }) => {
       return;
     }
 
-    fetch('http://localhost:8000/api/inventory/', {
+    fetch('https://billstack-backend-eb1d.onrender.com/api/inventory/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

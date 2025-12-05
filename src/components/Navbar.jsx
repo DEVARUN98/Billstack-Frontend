@@ -7,7 +7,7 @@
 //   const handleLogout = async () => {
 //     if (window.confirm('Logout?')) {
 //       try {
-//         await fetch('http://localhost:8000/api/logout/', {
+//         await fetch('https://billstack-backend-eb1d.onrender.com/api/logout/', {
 //           method: 'POST',
 //           credentials: 'include',
 //         });
@@ -51,7 +51,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     if (window.confirm('Logout?')) {
       try {
-        await fetch('http://localhost:8000/api/logout/', {
+        await fetch('https://billstack-backend-eb1d.onrender.com/api/logout/', {
           method: 'POST',
           credentials: 'include',
         });

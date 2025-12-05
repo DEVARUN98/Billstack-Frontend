@@ -9,7 +9,7 @@ const Login = ({ onLogin }) => {
 
 const handleSubmit = e => {
   e.preventDefault();
-  fetch('http://localhost:8000/api/api-token-auth/', {  // full backend URL here
+  fetch('https://billstack-backend-eb1d.onrender.com/api/api-token-auth/', {  // full backend URL here
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),

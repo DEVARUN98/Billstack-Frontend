@@ -40,7 +40,7 @@ function App() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/session-status/', {
+        const res = await fetch('https://billstack-backend-eb1d.onrender.com/api/session-status/', {
           credentials: 'include',
         });
         const data = await res.json();
@@ -65,7 +65,7 @@ function App() {
     const loadAllData = async () => {
       try {
         // Load Products
-        const productsRes = await fetch('http://localhost:8000/api/products/', {
+        const productsRes = await fetch('https://billstack-backend-eb1d.onrender.com/api/products/', {
           credentials: 'include',
         });
         if (productsRes.ok) {
@@ -74,7 +74,7 @@ function App() {
         }
 
         // Load Invoices
-        const invoicesRes = await fetch('http://localhost:8000/api/invoicesnew/', {
+        const invoicesRes = await fetch('https://billstack-backend-eb1d.onrender.com/api/invoicesnew/', {
           credentials: 'include',
         });
         if (invoicesRes.ok) {
@@ -84,7 +84,7 @@ function App() {
         }
 
         // Load Customers (from invoices)
-        const customersRes = await fetch('http://localhost:8000/api/invoicesnew/customers/', {
+        const customersRes = await fetch('https://billstack-backend-eb1d.onrender.com/api/invoicesnew/customers/', {
           credentials: 'include',
         });
         if (customersRes.ok) {

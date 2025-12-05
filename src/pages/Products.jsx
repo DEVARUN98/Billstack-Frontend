@@ -19,7 +19,7 @@ export default function Products({ products = [], setProducts }) {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/products/", {
+      const res = await fetch("https://billstack-backend-eb1d.onrender.com/api/products/", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

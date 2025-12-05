@@ -12,7 +12,7 @@ export default function Customers({ isAdmin }) {
     const loadCustomers = async () => {
       try {
         setInitialLoading(true);
-        const res = await fetch("http://localhost:8000/api/invoicesnew/customers/", {
+        const res = await fetch("https://billstack-backend-eb1d.onrender.com/api/invoicesnew/customers/", {
           credentials: "include",
         });
         if (res.ok) {
@@ -47,7 +47,7 @@ export default function Customers({ isAdmin }) {
 
     setAddLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/api/invoicesnew/add_customer/", {
+      const res = await fetch("https://billstack-backend-eb1d.onrender.com/api/invoicesnew/add_customer/", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -59,7 +59,7 @@ export default function Customers({ isAdmin }) {
 
       if (res.ok) {
         // Refresh customers list after add
-        const refreshRes = await fetch("http://localhost:8000/api/invoicesnew/customers/", {
+        const refreshRes = await fetch("https://billstack-backend-eb1d.onrender.com/api/invoicesnew/customers/", {
           credentials: "include",
         });
         if (refreshRes.ok) {
