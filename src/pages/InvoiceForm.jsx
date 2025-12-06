@@ -51,6 +51,7 @@ export default function InvoiceForm({ invoices=[], setInvoices ,customers=[], se
     };
 
     const res = await fetch("https://billstack-backend-eb1d.onrender.com/api/invoicesnew/", {
+    // const res = await fetch("http://127.0.0.1:8000/api/invoicesnew/", {
       method: "POST",
       credentials: "include",  // send session cookie
       headers: { "Content-Type": "application/json" },

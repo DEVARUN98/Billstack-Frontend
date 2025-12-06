@@ -9,8 +9,9 @@ export default function Dashboard({ invoices, customers, products }) {
   return (
     <div className="dashboard">
       {/* {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",invoices)} */}
-      {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",totalSales, customers, products,invoices)}
-      {console.log("invvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",customers.length, products.length)}
+      {console.log("totalsalesssssssssssssss",totalSales)}
+      {console.log("invoicessssssssssssssss",invoices)}
+      {console.log("productssssssssssssss",products)}
       <h2>Dashboard Overview</h2>
       <div className="stats">
         <div className="stat-card">
