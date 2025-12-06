@@ -4,7 +4,7 @@ export default function Dashboard({ invoices, customers, products }) {
   if (!invoices || !customers || !products) {
     return <div>Loading...</div>;
   }
-  const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
+  const totalSales = invoices.reduce((sum, inv) => sum + inv.subtotal, 0);
 
   return (
     <div className="dashboard">
